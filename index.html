@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Bíblico</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #e9efff, #b3d1ff);
+        }
+
+        .container {
+            max-width: 500px;
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .question {
+            font-size: 18px;
+            margin: 15px 0;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .options button {
+            margin: 5px 0;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        .options button:hover {
+            background-color: #45a049;
+        }
+
+        .ampulheta {
+            position: relative;
+            width: 50px;
+            height: 100px;
+            margin: 10px auto;
+            border: 2px solid #555;
+            border-radius: 25px;
+            overflow: hidden;
+            background: #e8e8e8;
+        }
+
+        .ampulheta .areia {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 0;
+            background: #d4af37;
+            animation: areiaDescendo 10s linear forwards;
+        }
+
+        @keyframes areiaDescendo {
+            from {
+                height: 0;
+            }
+            to {
+                height: 100%;
+            }
+        }
+
+        .score {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quiz Bíblico</h1>
+        <div id="quiz">
+            <div class="question">Carregando pergunta...</div>
+            <div class="ampulheta">
+                <div class="areia"></div>
+            </div>
+            <div class="options">
+                <!-- As opções aparecerão aqui -->
+            </div>
+        </div>
+        <div class="score" id="score">Pontuação: 0</div>
+    </div>
+
+    <script>
+        const perguntas = [
+            { pergunta: "Quem foi jogado na cova dos leões?", respostas: ["Daniel", "Jonas", "Moisés", "Elias"], correta: 0 },
+            { pergunta: "Quantos discípulos Jesus tinha?", respostas: ["10", "12", "14", "7"], correta: 1 },
+            { pergunta: "Quem construiu a arca?", respostas: ["Abraão", "Moisés", "Noé", "Salomão"], correta: 2 },
+            { pergunta: "Qual é o primeiro livro da Bíblia?", respostas: ["Êxodo", "Apocalipse", "Gênesis", "Mateus"], correta: 2 },
+            { pergunta: "Quem foi chamado amigo de Deus?", respostas: ["Abraão", "Davi", "Paulo", "Pedro"], correta: 0 },
+            { pergunta: "Quem foi engolido por um grande peixe?", respostas: ["Jonas", "Noé", "Davi", "João"], correta: 0 },
+            { pergunta: "Quem traiu Jesus?", respostas: ["Pedro", "João", "Judas", "Tiago"], correta: 2 },
+            { pergunta: "Qual foi o monte onde Moisés recebeu os Dez Mandamentos?", respostas: ["Sinai", "Tabor", "Oliveiras", "Hermom"], correta: 0 },
+            { pergunta: "Qual era o nome da mãe de Jesus?", respostas: ["Marta", "Maria", "Rute", "Sara"], correta: 1 },
+            { pergunta: "Qual o livro da Bíblia que fala sobre o Apocalipse?", respostas: ["Êxodo", "Apocalipse", "Mateus", "Lucas"], correta: 1 },
+        ];
+
+        let perguntaAtual = 0;
+        let pontuacao = 0;
+        let timer;
+
+        function carregarPergunta() {
+            const quiz = document.getElementById('quiz');
+            const scoreDisplay = document.getElementById('score');
+            if (perguntaAtual < perguntas.length) {
+                const { pergunta, respostas } = perguntas[perguntaAtual];
+                quiz.querySelector('.question').textContent = pergunta;
+
+                const optionsContainer = quiz.querySelector('.options');
+                optionsContainer.innerHTML = '';
+                respostas.forEach((resposta, index) => {
+                    const button = document.createElement('button');
+                    button.textContent = resposta;
+                    button.onclick = () => verificarResposta(index);
+                    optionsContainer.appendChild(button);
+                });
+
+                quiz.querySelector('.areia').style.animation = 'none';
+                void quiz.querySelector('.areia').offsetWidth;
+                quiz.querySelector('.areia').style.animation = 'areiaDescendo 10s linear forwards';
+
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    verificarResposta(-1);
+                }, 10000);
+            } else {
+                quiz.innerHTML = `<h2>Fim do Quiz!</h2>`;
+                let resultado;
+                if (pontuacao <= 6) resultado = "Aprendiz";
+                else if (pontuacao <= 14) resultado = "Estagiário da Bíblia";
+                else resultado = "Sacerdote";
+                quiz.innerHTML += `<p>Você é um ${resultado} com ${pontuacao} pontos!</p>`;
+            }
+
+            scoreDisplay.textContent = `Pontuação: ${pontuacao}`;
+        }
+
+        function verificarResposta(indice) {
+            if (indice === perguntas[perguntaAtual].correta) {
+                pontuacao += 2;
+            }
+            perguntaAtual++;
+            carregarPergunta();
+        }
+
+        carregarPergunta();
+    </script>
+</body>
+</html>
